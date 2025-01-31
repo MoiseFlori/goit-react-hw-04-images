@@ -18,52 +18,42 @@ export default class App extends Component {
       hasMoreImages: true,
     };
   }
-  componentDidUpdate(prevState) {
-    if (prevState.query !== this.state.query) {
-      this.setState({ images: [], page: 1, isLoading: true }, () => {
-        this.loadImages(this.state.query, 1);
-      });
-    }
-
-    if (
-      prevState.page !== this.state.page &&
-      prevState.query === this.state.query
-    ) {
-      this.loadImages(this.state.query, this.state.page);
-    }
-  }
 
   onSubmit = query => {
-    this.setState({ query });
+    this.setState({ query, page: 1, images: [], isLoading: true }, () => {
+      this.loadImages(query, 1);
+    });
   };
 
   loadImages = async (query, page) => {
     try {
-      this.setState({ isLoading: true });
+      const data = await fetchImages(query, page); 
 
-      const data = await fetchImages(query, page);
+      this.setState(prevState => {
+        const newImages = [...prevState.images, ...data.hits];
+        const totalImages = data.totalHits;
+        const hasMore = newImages.length < totalImages && data.hits.length > 0;
 
-      if (!data.length) {
-        this.setState({ hasMoreImages: false });
-        return;
-      }
-
-      this.updateImageState(data);
+        return {
+          images: newImages,
+          isLoading: false,
+          hasMoreImages: hasMore,
+        };
+      });
     } catch (error) {
-      this.setState({ error: error.message });
-    } finally {
-      this.setState({ isLoading: false });
+      this.setState({ error: error.message, isLoading: false });
+      console.error('Fetch error:', error);
     }
   };
 
-  updateImageState = newImages => {
-    this.setState(prevState => ({
-      images: [...prevState.images, ...newImages],
-    }));
-  };
-
+  
   handleLoadMore = () => {
-    this.setState(prevState => ({ page: prevState.page + 1, isLoading: true }));
+    this.setState(
+      prevState => ({ page: prevState.page + 1, isLoading: true }),
+      () => {
+        this.loadImages(this.state.query, this.state.page);
+      }
+    );
   };
 
   render() {
