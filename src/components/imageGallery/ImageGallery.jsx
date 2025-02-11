@@ -4,13 +4,12 @@ import ImageGalleryItem from '../imageGalleryItem/ImageGalleryItem';
 import styles from './ImageGallery.module.css';
 import {nanoid} from 'nanoid';
 
-class ImageGallery extends Component {
-  render() {
-    const { images } = this.props;
+const ImageGallery = ({ images }) => {
+
 
     return (
       <ul className={styles.imageGallery}>
-        {images.map(({ id, webformatURL, largeImageURL, tags }) => (
+        {images.map(({ webformatURL, largeImageURL, tags }) => (
           <ImageGalleryItem
             key={nanoid()}
             webformatURL={webformatURL}
@@ -21,7 +20,7 @@ class ImageGallery extends Component {
       </ul>
     );
   }
-}
+
 
 ImageGallery.propTypes = {
   images: PropTypes.arrayOf(

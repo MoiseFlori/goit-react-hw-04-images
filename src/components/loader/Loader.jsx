@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { ColorRing } from 'react-loader-spinner';
 import styles from './Loader.module.css';
 
-class Loader extends Component {
-  render() {
+const Loader = ({ visible }) => {
+
     return (
       <div className={styles.loaderContainer}>
         <ColorRing
-          visible={this.props.visible}
+          visible={visible}
           height="80"
           width="80"
           ariaLabel="color-ring-loading"
@@ -19,7 +19,7 @@ class Loader extends Component {
       </div>
     );
   }
-}
+
 
 Loader.propTypes = {
   visible: PropTypes.bool.isRequired,

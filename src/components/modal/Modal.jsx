@@ -1,38 +1,46 @@
-import React, { Component } from 'react';
+import React, { useEffect,useCallback } from 'react';
 import PropTypes from 'prop-types';
 import styles from './Modal.module.css'; 
 
-class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
-  }
+const Modal = ({ largeImageURL, alt, onClose }) => {
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
-  }
+  //folosim useCallback pentru a evita re-renderizarea inutila a componentei la fiecare apasare
+  //a butonului "Escape" 
+  const handleKeyDown = useCallback(
+    e => {
+      if (e.code === 'Escape') {
+        onClose();
+      }
+    },
+    [onClose]
+  );
 
-  handleKeyDown = e => {
-    if (e.code === 'Escape') {
-      this.props.onClose();
-    }
-  };
+  //folosim useEffect pentru a adauga si elimina event listener-ul pentru apasarea butonului "Escape"
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      //similiar cu componentWillUnmount
+      window.removeEventListener('keydown', handleKeyDown); 
+    };
+  }, [handleKeyDown]); 
 
-  handleOverlayClick = e => {
+
+   const handleOverlayClick = e => {
     if (e.target === e.currentTarget) {
-      this.props.onClose();
+      onClose();
     }
   };
 
-  render() {
-    const { largeImageURL, alt } = this.props;
+ 
+
 
     return (
-      <div className={styles.overlay} onClick={this.handleOverlayClick}>
+      <div className={styles.overlay} onClick={handleOverlayClick}>
           <img className={styles.largeImage} src={largeImageURL} alt={alt} />
       </div>
     );
   }
-}
+
 
 Modal.propTypes = {
   largeImageURL: PropTypes.string.isRequired,
