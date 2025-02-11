@@ -6,15 +6,14 @@ const  SearchBar = ({ onSubmit }) => {
   const [query, setQuery] = useState('');
 
  const  handleInputChange = event => {
-    setQuery({ query: event.target.value });
+    setQuery(event.target.value);
   };
 
  const  handleSubmit = event => {
     event.preventDefault();
-    if (query.trim() === '') {
       onSubmit(query);
       setQuery('');
-    }
+    
   };
 
    
