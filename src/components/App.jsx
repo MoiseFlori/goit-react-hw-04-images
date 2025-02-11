@@ -23,19 +23,19 @@ const App = () => {
 
   // efect pentru a incarca imagini atunci cand `query` sau `page` se schimba
   useEffect(() => {
-    
     if (!query) return;
 
     const loadImages = async () => {
       setIsLoading(true);
       try {
         const data = await fetchImages(query, page);
-        setImages(prevImages => [...prevImages, ...data.hits]);
 
-        const totalImages = data.totalHits;
-        setHasMoreImages(
-          prevImages => prevImages.length + data.hits.length < totalImages
-        );
+        setImages(prevImages => {
+          const updatedImages = [...prevImages, ...data.hits];
+
+          setHasMoreImages(updatedImages.length < data.totalHits);
+          return updatedImages; 
+        });
       } catch (error) {
         setError(error.message);
       } finally {
